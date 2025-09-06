@@ -1,0 +1,89 @@
+package com.cn.past.time.service;
+
+import com.cn.past.time.model.response.AccountDto;
+import com.cn.past.time.model.response.AccountVo;
+import com.cn.past.time.model.service.AccountBo;
+import com.cn.past.time.util.ProxyUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.*;
+import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestTemplate;
+
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.util.List;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class LoginService {
+    private final RestTemplate restTemplate;
+    private final ObjectMapper objectMapper;
+
+    private final static String ACCOUNT_LIST_URL = "https://api.txttool.cn/netcut/note/info/";
+    private final static String ACCOUNT_PASSWORD = "xin-xin";
+
+    public AccountVo accountStatus(String nodeId, String phone) {
+        HttpHeaders headers = buildHeaders();
+        MultiValueMap<String, String> parameters = buildParameters(nodeId);
+        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(parameters, headers);
+
+        log.info("Request Header: {}", ProxyUtil.headers2JsonStr(headers));
+        log.info("Request Parameters: {}", parameters);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                ACCOUNT_LIST_URL,
+                HttpMethod.POST,
+                requestEntity,
+                String.class
+        );
+
+        if (response.getStatusCode() != HttpStatus.OK) {
+            log.error("get account list failed: {}", response);
+            return null;
+        }
+        String responseBody = response.getBody();
+        log.info("response: {}", responseBody);
+
+        List<AccountBo> accountBoList;
+        if (StringUtils.hasLength(responseBody)) {
+            try {
+                AccountDto accountDto = objectMapper.readValue(responseBody, AccountDto.class);
+                accountBoList = objectMapper.readValue(accountDto.data().noteContent(), new TypeReference<>() {
+                });
+                return accountBoList.stream()
+                        .filter(account -> account.phone().equals(phone))
+                        .findFirst()
+                        .map(bo -> new AccountVo(bo.phone(), bo.expireDate(), LocalDate.now().isAfter(bo.expireDate())))
+                        .orElse(null);
+            } catch (JsonProcessingException e) {
+                log.error("parse account list failed:", e);
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    private static MultiValueMap<String, String> buildParameters(String nodeId) {
+        MultiValueMap<String, String> paramMap = new LinkedMultiValueMap<>();
+        paramMap.add("note_id", nodeId);
+        paramMap.add("note_pwd", ACCOUNT_PASSWORD);
+        return paramMap;
+    }
+
+    private static HttpHeaders buildHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        MediaType mediaType = new MediaType(MediaType.APPLICATION_FORM_URLENCODED, StandardCharsets.UTF_8);
+        headers.setContentType(mediaType);
+        headers.set("accept-language", "en-US,en;q=0.9");
+        return headers;
+    }
+}
