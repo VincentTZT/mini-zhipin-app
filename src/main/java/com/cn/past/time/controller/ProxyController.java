@@ -1,9 +1,9 @@
 package com.cn.past.time.controller;
 
 
-import com.cn.past.time.exception.MiniZhipinException;
 import com.cn.past.time.model.payload.MiniZhiPinPayload;
 import com.cn.past.time.model.response.AccountVo;
+import com.cn.past.time.model.response.ResponseDto;
 import com.cn.past.time.service.LoginService;
 import com.cn.past.time.service.ZhiPinService;
 import com.cn.past.time.util.Const;
@@ -13,7 +13,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,22 +25,29 @@ public class ProxyController {
     private final ZhiPinService zhiPinService;
 
     @PostMapping("/zhipin")
-    public String proxyRequest(HttpServletRequest request, @Valid @RequestBody MiniZhiPinPayload payload) {
+    public ResponseDto proxyRequest(HttpServletRequest request, @Valid @RequestBody MiniZhiPinPayload payload) {
         String phone = request.getHeader(Const.ZHIPIN_PHONE);
         String noteId = request.getHeader(Const.ZHIPIN_NOTE_ID);
         if (!StringUtils.hasLength(phone)) {
-            throw new MiniZhipinException(HttpStatus.UNAUTHORIZED, "手机号码不能为空: " + phone);
+            log.error("手机号码不能为空: {}", phone);
+            return new ResponseDto(false, "手机号码不能为空: " + phone, null);
         }
         AccountVo accountVo = loginService.accountStatus(noteId, phone);
-        if (accountVo == null || accountVo.isExpired()) {
-            log.error("无效账号: {}", accountVo);
-            throw new MiniZhipinException(HttpStatus.UNAUTHORIZED, "无效账号: " + phone);
+        if (accountVo == null) {
+            log.error("无效账号: {}", phone);
+            return new ResponseDto(false, "无效账号: " + phone, null);
         }
+        if (accountVo.isExpired()) {
+            log.error("账号已过期: {}", phone);
+            return new ResponseDto(false, "账号已过期: " + phone, null);
+        }
+
         HttpHeaders headers = ProxyUtil.copyRequestHeaders(request);
         if (!zhiPinService.validAccountByPhone(headers, phone)) {
-            throw new MiniZhipinException(HttpStatus.UNAUTHORIZED, "无效账号: " + phone);
+            log.error("无效账号: {}", phone);
+            return new ResponseDto(false, "无效账号: " + phone, null);
         }
-        return zhiPinService.proxyRequest(headers, payload);
+        return new ResponseDto(true, "success", zhiPinService.proxyRequest(headers, payload));
     }
 
     @GetMapping("/account/status")

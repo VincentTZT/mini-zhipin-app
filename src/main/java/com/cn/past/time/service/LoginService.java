@@ -3,7 +3,6 @@ package com.cn.past.time.service;
 import com.cn.past.time.model.response.AccountDto;
 import com.cn.past.time.model.response.AccountVo;
 import com.cn.past.time.model.service.AccountBo;
-import com.cn.past.time.util.ProxyUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,11 +32,15 @@ public class LoginService {
     public AccountVo accountStatus(String nodeId, String phone) {
         HttpHeaders headers = buildHeaders();
         MultiValueMap<String, String> parameters = buildParameters(nodeId);
+
+        try {
+            log.info("Request Header: {}", objectMapper.writeValueAsString(headers));
+            log.info("Request Parameters: {}", objectMapper.writeValueAsString(parameters));
+        } catch (JsonProcessingException e) {
+            log.error("Error parsing objects.", e);
+        }
+
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(parameters, headers);
-
-        log.info("Request Header: {}", ProxyUtil.headers2JsonStr(headers));
-        log.info("Request Parameters: {}", parameters);
-
         ResponseEntity<String> response = restTemplate.exchange(
                 ACCOUNT_LIST_URL,
                 HttpMethod.POST,

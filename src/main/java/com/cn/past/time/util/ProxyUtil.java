@@ -5,17 +5,8 @@ import org.springframework.http.HttpHeaders;
 
 import java.util.Enumeration;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ProxyUtil {
-
-    public static String headers2JsonStr(HttpHeaders headers) {
-        return headers.entrySet().stream()
-                .map(entry -> "\"" + entry.getKey() + "\": \"" +
-                        String.join(", ", entry.getValue()).replace("\"", "\\\"") + "\"")
-                .collect(Collectors.joining(", ", "{", "}"));
-    }
-
     public static HttpHeaders copyRequestHeaders(HttpServletRequest request) {
         HttpHeaders headers = new HttpHeaders();
         Enumeration<String> headerNames = request.getHeaderNames();
