@@ -12,8 +12,8 @@ public class MiniZhipinException extends RuntimeException {
         this.httpStatus = httpStatus;
     }
 
-    public MiniZhipinException(HttpStatus httpStatus, Exception e) {
-        super(e);
+    public MiniZhipinException(HttpStatus httpStatus, String message, Exception e) {
+        super(message, e);
         this.httpStatus = httpStatus;
     }
 }

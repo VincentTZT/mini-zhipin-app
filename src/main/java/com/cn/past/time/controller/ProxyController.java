@@ -19,12 +19,11 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/proxy")
 public class ProxyController {
     private final LoginService loginService;
     private final ZhiPinService zhiPinService;
 
-    @PostMapping("/zhipin")
+    @PostMapping("/proxy/zhipin")
     public ResponseDto proxyRequest(HttpServletRequest request, @Valid @RequestBody MiniZhiPinPayload payload) {
         String phone = request.getHeader(Const.ZHIPIN_PHONE);
         String noteId = request.getHeader(Const.ZHIPIN_NOTE_ID);
@@ -50,8 +49,8 @@ public class ProxyController {
         return new ResponseDto(true, "success", zhiPinService.proxyRequest(headers, payload));
     }
 
-    @GetMapping("/account/status")
+    @GetMapping("/account")
     public AccountVo accountStatus(@RequestHeader(Const.ZHIPIN_NOTE_ID) String nodeId, @RequestHeader(Const.ZHIPIN_PHONE) String phone) {
-        return loginService.accountStatus(nodeId, phone);
+        return  loginService.accountStatus(nodeId, phone);
     }
 }

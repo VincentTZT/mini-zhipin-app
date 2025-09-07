@@ -2,7 +2,6 @@ package com.cn.past.time.service;
 
 import com.cn.past.time.exception.MiniZhipinException;
 import com.cn.past.time.model.payload.MiniZhiPinPayload;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +44,7 @@ public class ZhiPinService {
                 null
         ));
         String hidPhone = Optional.ofNullable(accountInfoStr.get("zpData").get("phone")).map(JsonNode::asText).orElse(null);
-        log.info("Hid phone is {}", hidPhone);
+//        log.info("Hid phone is {}", hidPhone);
         if (!StringUtils.hasLength(hidPhone)) {
             return false;
         }
@@ -84,7 +83,7 @@ public class ZhiPinService {
                 }
             }
         } catch (IOException e) {
-            log.error("Error reading request payload params: {}", payload.params(), e);
+//            log.error("Error reading request payload params: {}", payload.params(), e);
             throw new MiniZhipinException(HttpStatus.BAD_REQUEST, "Error reading payload params: " + payload.params());
         }
 
@@ -93,13 +92,13 @@ public class ZhiPinService {
         }
         headers.set("referer", targetUrl.toString());
 
-        try {
-            log.info("Request Header: {}", objectMapper.writeValueAsString(headers));
-            log.info("Request Body: {}", CollectionUtils.isEmpty(paramMap) ? body : objectMapper.writeValueAsString(paramMap));
-            log.info("Request url: {}", targetUrl);
-        } catch (JsonProcessingException e) {
-            log.error("Error parsing objects.", e);
-        }
+//        try {
+//            log.info("Request Header: {}", objectMapper.writeValueAsString(headers));
+//            log.info("Request Body: {}", CollectionUtils.isEmpty(paramMap) ? body : objectMapper.writeValueAsString(paramMap));
+//            log.info("Request url: {}", targetUrl);
+//        } catch (JsonProcessingException e) {
+//            log.error("Error parsing objects.", e);
+//        }
 
         try {
             // 构建目标URI
@@ -115,10 +114,10 @@ public class ZhiPinService {
                     requestEntity,
                     String.class
             );
-            log.info("Response: {}", response);
+//            log.info("Response: {}", response);
 
             String responseBody = response.getBody();
-            log.info("Response Body: {}", responseBody);
+//            log.info("Response Body: {}", responseBody);
             return objectMapper.readTree(responseBody);
         } catch (Exception e) {
             throw new MiniZhipinException(HttpStatus.BAD_REQUEST, "Error proxying request: " + e.getMessage());

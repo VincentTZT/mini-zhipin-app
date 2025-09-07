@@ -1,9 +1,9 @@
 package com.cn.past.time.service;
 
+import com.cn.past.time.exception.MiniZhipinException;
 import com.cn.past.time.model.response.AccountDto;
 import com.cn.past.time.model.response.AccountVo;
 import com.cn.past.time.model.service.AccountBo;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -33,12 +33,12 @@ public class LoginService {
         HttpHeaders headers = buildHeaders();
         MultiValueMap<String, String> parameters = buildParameters(nodeId);
 
-        try {
-            log.info("Request Header: {}", objectMapper.writeValueAsString(headers));
-            log.info("Request Parameters: {}", objectMapper.writeValueAsString(parameters));
-        } catch (JsonProcessingException e) {
-            log.error("Error parsing objects.", e);
-        }
+//        try {
+//            log.info("Request Header: {}", objectMapper.writeValueAsString(headers));
+//            log.info("Request Parameters: {}", objectMapper.writeValueAsString(parameters));
+//        } catch (JsonProcessingException e) {
+//            log.error("Error parsing objects.", e);
+//        }
 
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(parameters, headers);
         ResponseEntity<String> response = restTemplate.exchange(
@@ -49,11 +49,11 @@ public class LoginService {
         );
 
         if (response.getStatusCode() != HttpStatus.OK) {
-            log.error("get account list failed: {}", response);
-            return null;
+//            log.error("get account list failed: {}", response);
+            throw new MiniZhipinException(HttpStatus.valueOf(response.getStatusCode().value()), "get account list failed");
         }
         String responseBody = response.getBody();
-        log.info("response: {}", responseBody);
+//        log.info("response: {}", responseBody);
 
         List<AccountBo> accountBoList;
         if (StringUtils.hasLength(responseBody)) {
@@ -65,13 +65,13 @@ public class LoginService {
                         .filter(account -> account.phone().equals(phone))
                         .findFirst()
                         .map(bo -> new AccountVo(bo.phone(), bo.expireDate(), LocalDate.now().isAfter(bo.expireDate())))
-                        .orElse(null);
-            } catch (JsonProcessingException e) {
-                log.error("parse account list failed:", e);
-                return null;
+                        .orElseThrow(() -> new MiniZhipinException(HttpStatus.BAD_REQUEST, "account not found"));
+            } catch (Exception e) {
+//                log.error("parse account list failed", e);
+                throw new MiniZhipinException(HttpStatus.BAD_REQUEST, "parse account list failed", e);
             }
         } else {
-            return null;
+            throw new MiniZhipinException(HttpStatus.BAD_REQUEST, "account list is empty");
         }
     }
 
