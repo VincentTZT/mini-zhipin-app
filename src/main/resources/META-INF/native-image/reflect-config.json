@@ -1,0 +1,14 @@
+[
+  {
+    "name": "com.cn.past.time.model.response.AccountDto",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.cn.past.time.model.service.AccountBo",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  }
+]

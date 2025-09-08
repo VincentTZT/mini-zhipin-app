@@ -65,7 +65,10 @@ public class LoginService {
                         .filter(account -> account.phone().equals(phone))
                         .findFirst()
                         .map(bo -> new AccountVo(bo.phone(), bo.expireDate(), LocalDate.now().isAfter(bo.expireDate())))
-                        .orElseThrow(() -> new MiniZhipinException(HttpStatus.BAD_REQUEST, "account not found"));
+                        .orElseGet(() -> {
+                            log.error("account not found: {}", phone);
+                            return null;
+                        });
             } catch (Exception e) {
 //                log.error("parse account list failed", e);
                 throw new MiniZhipinException(HttpStatus.BAD_REQUEST, "parse account list failed", e);

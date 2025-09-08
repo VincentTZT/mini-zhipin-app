@@ -1,6 +1,6 @@
 package com.cn.past.time.model.response;
 
-public record ResponseDto(
+public record ResponseVo(
         boolean success,
         String message,
         Object body
