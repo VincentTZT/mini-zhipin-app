@@ -26,12 +26,12 @@ public class ProxyController {
     @PostMapping("/proxy/zhipin")
     public ResponseDto proxyRequest(HttpServletRequest request, @Valid @RequestBody MiniZhiPinPayload payload) {
         String phone = request.getHeader(Const.ZHIPIN_PHONE);
-        String noteId = request.getHeader(Const.ZHIPIN_NOTE_ID);
+        String noteName = request.getHeader(Const.ZHIPIN_NOTE_NAME);
         if (!StringUtils.hasLength(phone)) {
             log.error("手机号码不能为空: {}", phone);
             return new ResponseDto(false, "手机号码不能为空: " + phone, null);
         }
-        AccountVo accountVo = loginService.accountStatus(noteId, phone);
+        AccountVo accountVo = loginService.accountStatus(noteName, phone);
         if (accountVo == null) {
             log.error("无效账号: {}", phone);
             return new ResponseDto(false, "无效账号: " + phone, null);
@@ -50,7 +50,7 @@ public class ProxyController {
     }
 
     @GetMapping("/account")
-    public AccountVo accountStatus(@RequestHeader(Const.ZHIPIN_NOTE_ID) String nodeId, @RequestHeader(Const.ZHIPIN_PHONE) String phone) {
-        return  loginService.accountStatus(nodeId, phone);
+    public AccountVo accountStatus(@RequestHeader(Const.ZHIPIN_NOTE_NAME) String noteName, @RequestHeader(Const.ZHIPIN_PHONE) String phone) {
+        return loginService.accountStatus(noteName, phone);
     }
 }

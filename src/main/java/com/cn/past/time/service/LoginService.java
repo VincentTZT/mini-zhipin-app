@@ -29,9 +29,9 @@ public class LoginService {
     private final static String ACCOUNT_LIST_URL = "https://api.txttool.cn/netcut/note/info/";
     private final static String ACCOUNT_PASSWORD = "xin-xin";
 
-    public AccountVo accountStatus(String nodeId, String phone) {
+    public AccountVo accountStatus(String noteName, String phone) {
         HttpHeaders headers = buildHeaders();
-        MultiValueMap<String, String> parameters = buildParameters(nodeId);
+        MultiValueMap<String, String> parameters = buildParameters(noteName);
 
 //        try {
 //            log.info("Request Header: {}", objectMapper.writeValueAsString(headers));
@@ -75,9 +75,9 @@ public class LoginService {
         }
     }
 
-    private static MultiValueMap<String, String> buildParameters(String nodeId) {
+    private static MultiValueMap<String, String> buildParameters(String noteName) {
         MultiValueMap<String, String> paramMap = new LinkedMultiValueMap<>();
-        paramMap.add("note_id", nodeId);
+        paramMap.add("note_name", noteName);
         paramMap.add("note_pwd", ACCOUNT_PASSWORD);
         return paramMap;
     }

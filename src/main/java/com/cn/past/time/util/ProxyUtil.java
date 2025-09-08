@@ -13,7 +13,7 @@ public class ProxyUtil {
         while (headerNames.hasMoreElements()) {
             String headerName = headerNames.nextElement();
             // 跳过一些不需要转发的头
-            if (List.of("content-length", "host", "referer", "origin", "content-type", Const.ZHIPIN_NOTE_ID, Const.ZHIPIN_PHONE).contains(headerName)) {
+            if (List.of("content-length", "host", "referer", "origin", "content-type", Const.ZHIPIN_NOTE_NAME, Const.ZHIPIN_PHONE).contains(headerName)) {
                 continue;
             }
 
