@@ -32,7 +32,7 @@ public class MiniZhipinAppApplication {
         context = app.run(args);
     }
 
-    @Scheduled(fixedRate = 30, timeUnit = TimeUnit.MINUTES) // 每30秒检查一次
+    @Scheduled(fixedRate = 30, timeUnit = TimeUnit.MINUTES) // 每30分钟检查一次
     public void checkRunningTime() {
         Duration runningTime = Duration.between(startTime, Instant.now());
 //        log.info("应用已运行 {} 分钟", runningTime.toMinutes());
