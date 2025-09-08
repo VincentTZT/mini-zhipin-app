@@ -43,8 +43,8 @@ public class ProxyController {
 
         HttpHeaders headers = ProxyUtil.copyRequestHeaders(request);
         if (!zhiPinService.validAccountByPhone(headers, phone)) {
-            log.error("无效账号: {}", phone);
-            return new ResponseVo(false, "无效账号: " + phone, null);
+            log.error("无效BOSS账号: {}", phone);
+            return new ResponseVo(false, "无效BOSS账号: " + phone, null);
         }
         return new ResponseVo(true, "success", zhiPinService.proxyRequest(headers, payload));
     }
