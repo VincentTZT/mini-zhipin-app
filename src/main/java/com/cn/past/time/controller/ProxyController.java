@@ -1,20 +1,26 @@
 package com.cn.past.time.controller;
 
 
+import com.cn.past.time.exception.MiniZhipinException;
 import com.cn.past.time.model.payload.MiniZhiPinPayload;
 import com.cn.past.time.model.response.AccountVo;
 import com.cn.past.time.model.response.ResponseVo;
 import com.cn.past.time.service.LoginService;
 import com.cn.past.time.service.ZhiPinService;
+import com.cn.past.time.util.AESUtil;
 import com.cn.past.time.util.Const;
 import com.cn.past.time.util.ProxyUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -22,11 +28,18 @@ import org.springframework.web.bind.annotation.*;
 public class ProxyController {
     private final LoginService loginService;
     private final ZhiPinService zhiPinService;
+    private final ObjectMapper objectMapper;
 
     @PostMapping("/proxy/zhipin")
-    public ResponseVo proxyRequest(HttpServletRequest request, @Valid @RequestBody MiniZhiPinPayload payload) {
+    public ResponseVo proxyRequest(HttpServletRequest request, @RequestBody Map<String, String> map) {
         String phone = request.getHeader(Const.ZHIPIN_PHONE);
         String noteName = request.getHeader(Const.ZHIPIN_NOTE_NAME);
+        MiniZhiPinPayload payload;
+        try {
+            payload = objectMapper.readValue(AESUtil.decrypt(noteName, map.get("msg")), MiniZhiPinPayload.class);
+        } catch (Exception e) {
+            throw new MiniZhipinException(HttpStatus.BAD_REQUEST, "Decryption failed.", e);
+        }
         if (!StringUtils.hasLength(phone)) {
             log.error("手机号码不能为空: {}", phone);
             return new ResponseVo(false, "手机号码不能为空: " + phone, null);
@@ -43,10 +56,15 @@ public class ProxyController {
 
         HttpHeaders headers = ProxyUtil.copyRequestHeaders(request);
         if (!zhiPinService.validAccountByPhone(headers, phone)) {
-            log.error("无效BOSS账号: {}", phone);
-            return new ResponseVo(false, "无效BOSS账号: " + phone, null);
+            log.error("BOSS账号认证失败: {}", phone);
+            return new ResponseVo(false, "BOSS账号认证失败: " + phone, null);
         }
-        return new ResponseVo(true, "success", zhiPinService.proxyRequest(headers, payload));
+        try {
+            return new ResponseVo(true, "success",
+                    AESUtil.encrypt(noteName, objectMapper.writeValueAsString(zhiPinService.proxyRequest(headers, payload))));
+        } catch (JsonProcessingException e) {
+            throw new MiniZhipinException(HttpStatus.INTERNAL_SERVER_ERROR, "Encryption failed.", e);
+        }
     }
 
     @GetMapping("/account")
