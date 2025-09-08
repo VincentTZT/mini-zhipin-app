@@ -37,12 +37,17 @@ public class ZhiPinService {
 
     @Cacheable(value = "proxy.controller.valid.account", key = "#phone", unless = "#result == false")
     public boolean validAccountByPhone(HttpHeaders headers, String phone) {
-        JsonNode accountInfoStr = proxyRequest(headers, new MiniZhiPinPayload(
-                MiniZhiPinPayload.Method.GET,
-                "/wapi/zppassport/user/accountStatus",
-                null,
-                null
-        ));
+        JsonNode accountInfoStr;
+        try {
+            accountInfoStr = objectMapper.readTree(proxyRequest(headers, new MiniZhiPinPayload(
+                    MiniZhiPinPayload.Method.GET,
+                    "/wapi/zppassport/user/accountStatus",
+                    null,
+                    null
+            )));
+        } catch (Exception e) {
+            throw new MiniZhipinException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
         String hidPhone = Optional.ofNullable(accountInfoStr.get("zpData").get("phone")).map(JsonNode::asText).orElse(null);
 //        log.info("Hid phone is {}", hidPhone);
         if (!StringUtils.hasLength(hidPhone)) {
@@ -51,7 +56,7 @@ public class ZhiPinService {
         return phone.startsWith(hidPhone.substring(0, 3)) && phone.endsWith(hidPhone.substring(hidPhone.length() - 2));
     }
 
-    public JsonNode proxyRequest(HttpHeaders headers, MiniZhiPinPayload payload) {
+    public String proxyRequest(HttpHeaders headers, MiniZhiPinPayload payload) {
         StringBuilder targetUrl = new StringBuilder(ZHIPIN_URL).append(payload.targetUrl());
         String body = null;
         MultiValueMap<String, Object> paramMap = null;
@@ -116,9 +121,7 @@ public class ZhiPinService {
             );
 //            log.info("Response: {}", response);
 
-            String responseBody = response.getBody();
-//            log.info("Response Body: {}", responseBody);
-            return objectMapper.readTree(responseBody);
+            return response.getBody();
         } catch (Exception e) {
             throw new MiniZhipinException(HttpStatus.BAD_REQUEST, "Error proxying request: " + e.getMessage());
         }

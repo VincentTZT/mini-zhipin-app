@@ -10,7 +10,6 @@ import com.cn.past.time.service.ZhiPinService;
 import com.cn.past.time.util.AESUtil;
 import com.cn.past.time.util.Const;
 import com.cn.past.time.util.ProxyUtil;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -59,12 +58,7 @@ public class ProxyController {
             log.error("BOSS账号认证失败: {}", phone);
             return new ResponseVo(false, "BOSS账号认证失败: " + phone, null);
         }
-        try {
-            return new ResponseVo(true, "success",
-                    AESUtil.encrypt(noteName, objectMapper.writeValueAsString(zhiPinService.proxyRequest(headers, payload))));
-        } catch (JsonProcessingException e) {
-            throw new MiniZhipinException(HttpStatus.INTERNAL_SERVER_ERROR, "Encryption failed.", e);
-        }
+        return new ResponseVo(true, "success", AESUtil.encrypt(noteName, zhiPinService.proxyRequest(headers, payload)));
     }
 
     @GetMapping("/account")
