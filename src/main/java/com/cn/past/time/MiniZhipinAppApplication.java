@@ -1,5 +1,6 @@
 package com.cn.past.time;
 
+import com.cn.past.time.model.payload.MiniZhiPinPayload;
 import com.cn.past.time.model.response.AccountDto;
 import com.cn.past.time.model.service.AccountBo;
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
@@ -11,7 +12,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 @EnableCaching
 @EnableAspectJAutoProxy
 @SpringBootApplication
-@RegisterReflectionForBinding({AccountBo.class, AccountDto.class})
+@RegisterReflectionForBinding({AccountBo.class, AccountDto.class, MiniZhiPinPayload.class})
 public class MiniZhipinAppApplication {
 
     public static void main(String[] args) {
