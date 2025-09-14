@@ -37,23 +37,24 @@ public class ZhiPinService {
 
     @Cacheable(value = "proxy.controller.valid.account", key = "#phone", unless = "#result == false")
     public boolean validAccountByPhone(HttpHeaders headers, String phone) {
-        JsonNode accountInfoStr;
         try {
-            accountInfoStr = objectMapper.readTree(proxyRequest(headers, new MiniZhiPinPayload(
+            String response = proxyRequest(headers, new MiniZhiPinPayload(
                     MiniZhiPinPayload.Method.GET,
                     "/wapi/zppassport/user/accountStatus",
                     null,
                     null
-            )));
+            ));
+
+            JsonNode accountInfoStr = objectMapper.readTree(response);
+            String hidPhone = Optional.ofNullable(accountInfoStr.get("zpData").get("phone")).map(JsonNode::asText).orElse(null);
+//        log.info("Hid phone is {}", hidPhone);
+            if (!StringUtils.hasLength(hidPhone)) {
+                return false;
+            }
+            return phone.startsWith(hidPhone.substring(0, 3)) && phone.endsWith(hidPhone.substring(hidPhone.length() - 2));
         } catch (Exception e) {
             throw new MiniZhipinException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
-        String hidPhone = Optional.ofNullable(accountInfoStr.get("zpData").get("phone")).map(JsonNode::asText).orElse(null);
-//        log.info("Hid phone is {}", hidPhone);
-        if (!StringUtils.hasLength(hidPhone)) {
-            return false;
-        }
-        return phone.startsWith(hidPhone.substring(0, 3)) && phone.endsWith(hidPhone.substring(hidPhone.length() - 2));
     }
 
     public String proxyRequest(HttpHeaders headers, MiniZhiPinPayload payload) {
