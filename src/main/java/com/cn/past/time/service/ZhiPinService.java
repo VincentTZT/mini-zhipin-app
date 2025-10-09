@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -32,10 +33,11 @@ import java.util.stream.StreamSupport;
 public class ZhiPinService {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
+    private final ConcurrentHashMap<String, Integer> errorTimesMap = new ConcurrentHashMap<>();
 
     private final static String ZHIPIN_URL = "https://www.zhipin.com";
 
-    @Cacheable(value = "proxy.controller.valid.account", key = "#phone", unless = "#result == false")
+    @Cacheable(value = "zhi.pin.service.valid.account", key = "#phone", unless = "#result == false")
     public boolean validAccountByPhone(HttpHeaders headers, String phone) {
         try {
             String response = proxyRequest(headers, new MiniZhiPinPayload(
@@ -43,7 +45,7 @@ public class ZhiPinService {
                     "/wapi/zppassport/user/accountStatus",
                     null,
                     null
-            ));
+            ), phone);
 
             JsonNode accountInfoStr = objectMapper.readTree(response);
             String hidPhone = Optional.ofNullable(accountInfoStr.get("zpData").get("phone")).map(JsonNode::asText).orElse(null);
@@ -57,7 +59,11 @@ public class ZhiPinService {
         }
     }
 
-    public String proxyRequest(HttpHeaders headers, MiniZhiPinPayload payload) {
+    public String proxyRequest(HttpHeaders headers, MiniZhiPinPayload payload, String phone) {
+        if (errorTimesMap.getOrDefault(phone, 0) >= 5) {
+            throw new MiniZhipinException(HttpStatus.BAD_REQUEST,
+                    "BOSS账号 " + phone + " 请求错误达到5次了，请重启程序后再重试，或联系系统管理员。");
+        }
         StringBuilder targetUrl = new StringBuilder(ZHIPIN_URL).append(payload.targetUrl());
         String body = null;
         MultiValueMap<String, Object> paramMap = null;
@@ -124,6 +130,7 @@ public class ZhiPinService {
 
             return response.getBody();
         } catch (Exception e) {
+            errorTimesMap.put(phone, errorTimesMap.getOrDefault(phone, 0) + 1);
             throw new MiniZhipinException(HttpStatus.BAD_REQUEST, "Error proxying request: " + e.getMessage());
         }
     }

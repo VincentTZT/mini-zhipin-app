@@ -71,7 +71,7 @@ public class LoginService {
                         });
             } catch (Exception e) {
 //                log.error("parse account list failed", e);
-                throw new MiniZhipinException(HttpStatus.BAD_REQUEST, "parse account list failed", e);
+                throw new MiniZhipinException(HttpStatus.BAD_REQUEST, "parse account list failed: " + responseBody, e);
             }
         } else {
             throw new MiniZhipinException(HttpStatus.BAD_REQUEST, "account list is empty");

@@ -58,7 +58,7 @@ public class ProxyController {
             log.error("BOSS账号认证失败: {}", phone);
             return new ResponseVo(false, "BOSS账号认证失败: " + phone, null);
         }
-        return new ResponseVo(true, "success", AESUtil.encrypt(noteName, zhiPinService.proxyRequest(headers, payload)));
+        return new ResponseVo(true, "success", AESUtil.encrypt(noteName, zhiPinService.proxyRequest(headers, payload, phone)));
     }
 
     @GetMapping("/account")
