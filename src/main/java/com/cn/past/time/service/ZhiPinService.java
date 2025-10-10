@@ -37,7 +37,7 @@ public class ZhiPinService {
 
     private final static String ZHIPIN_URL = "https://www.zhipin.com";
 
-    @Cacheable(value = "zhi.pin.service.valid.account", key = "#phone", unless = "#result == false")
+    @Cacheable(value = "zhi.pin.service.valid.account", key = "#phone", unless = "#result==false")
     public boolean validAccountByPhone(HttpHeaders headers, String phone) {
         try {
             String response = proxyRequest(headers, new MiniZhiPinPayload(

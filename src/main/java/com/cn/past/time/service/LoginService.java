@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -29,6 +30,7 @@ public class LoginService {
     private final static String ACCOUNT_LIST_URL = "https://api.txttool.cn/netcut/note/info/";
     private final static String ACCOUNT_PASSWORD = "xin-xin";
 
+    @Cacheable(value = "login.service.account", key = "#noteName + '_' + #phone", unless = "#result==null")
     public AccountVo accountStatus(String noteName, String phone) {
         HttpHeaders headers = buildHeaders();
         MultiValueMap<String, String> parameters = buildParameters(noteName);

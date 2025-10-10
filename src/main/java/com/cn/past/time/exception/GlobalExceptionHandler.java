@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ExceptionVo> handleException(MiniZhipinException e, HttpServletRequest request) {
         String phone = request.getHeader(Const.ZHIPIN_PHONE);
         log.error("request url {}, phone {}, facing captured error.", request.getRequestURI(), phone);
-        sendSimpleMessage(e.getHttpStatus().value(), e.getMessage(), phone);
+        sendSimpleMessage(e.getHttpStatus().value(), request.getRequestURI() + "\n\n" + e.getMessage(), phone);
         return ResponseEntity.status(e.getHttpStatus()).body(new ExceptionVo(
                 e.getHttpStatus().value(),
                 e.getMessage()
@@ -34,7 +34,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ExceptionVo> handleException(Exception e, HttpServletRequest request) {
         String phone = request.getHeader(Const.ZHIPIN_PHONE);
         log.error("request url {}, phone {}, facing unexpected error.", request.getRequestURI(), phone);
-        sendSimpleMessage(HttpStatus.INTERNAL_SERVER_ERROR.value(), getRootCauseMessage(e), phone);
+        sendSimpleMessage(HttpStatus.INTERNAL_SERVER_ERROR.value(), request.getRequestURI() + "\n\n" + getRootCauseMessage(e), phone);
         return ResponseEntity.internalServerError().body(new ExceptionVo(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 getRootCauseMessage(e)
@@ -48,11 +48,15 @@ public class GlobalExceptionHandler {
     }
 
     private void sendSimpleMessage(int code, String text, String phone) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("zhipin_mini_app@126.com");
-        message.setTo("13538909905@139.com");
-        message.setSubject("ZhiPin Mini App Hit Error: " + code + ", phone: " + phone);
-        message.setText(text);
-        emailSender.send(message);
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom("zhipin_mini_app@126.com");
+            message.setTo("13538909905@139.com");
+            message.setSubject("ZhiPin Mini App Hit Error: " + code + ", phone: " + phone);
+            message.setText(text);
+            emailSender.send(message);
+        } catch (Exception e) {
+//            log.error("send email error, phone {}, code {}, text {}", phone, code, text, e);
+        }
     }
 }
