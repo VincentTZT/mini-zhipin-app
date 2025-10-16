@@ -6,6 +6,7 @@ import com.cn.past.time.model.response.AccountVo;
 import com.cn.past.time.model.service.AccountBo;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
@@ -57,13 +58,20 @@ public class LoginService {
         String responseBody = response.getBody();
 //        log.info("response: {}", responseBody);
 
-        List<AccountBo> accountBoList;
         if (StringUtils.hasLength(responseBody)) {
+            String accountJson;
             try {
                 AccountDto accountDto = objectMapper.readValue(responseBody, AccountDto.class);
-                accountBoList = objectMapper.readValue(accountDto.data().noteContent(), new TypeReference<>() {
+                ArrayNode arrayNode = objectMapper.readValue(accountDto.data().noteContent(), ArrayNode.class);
+                accountJson = arrayNode.get(0).get("content").asText();
+            } catch (Exception e) {
+//                log.error("parse account list failed", e);
+                throw new MiniZhipinException(HttpStatus.BAD_REQUEST, "parse account list failed: " + responseBody, e);
+            }
+            try {
+                List<AccountBo> accountBos = objectMapper.readValue(accountJson, new TypeReference<>() {
                 });
-                return accountBoList.stream()
+                return accountBos.stream()
                         .filter(account -> account.phone().equals(phone))
                         .findFirst()
                         .map(bo -> new AccountVo(bo.phone(), bo.expireDate(), LocalDate.now().isAfter(bo.expireDate())))
@@ -73,7 +81,7 @@ public class LoginService {
                         });
             } catch (Exception e) {
 //                log.error("parse account list failed", e);
-                throw new MiniZhipinException(HttpStatus.BAD_REQUEST, "parse account list failed: " + responseBody, e);
+                throw new MiniZhipinException(HttpStatus.BAD_REQUEST, "parse account list failed: " + accountJson, e);
             }
         } else {
             throw new MiniZhipinException(HttpStatus.BAD_REQUEST, "account list is empty");
