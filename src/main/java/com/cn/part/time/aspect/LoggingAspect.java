@@ -1,4 +1,4 @@
-//package com.cn.past.time.aspect;
+//package com.cn.part.time.aspect;
 //
 //import lombok.extern.slf4j.Slf4j;
 //import org.aspectj.lang.JoinPoint;
@@ -18,7 +18,7 @@
 //@Component
 //public class LoggingAspect {
 //
-//    @Before("execution(public * com.cn.past.time.controller..*(..)) || @annotation(LoggingAspect.LogExecution)")
+//    @Before("execution(public * com.cn.part.time.controller..*(..)) || @annotation(LoggingAspect.LogExecution)")
 //    public void logBeforeController(JoinPoint point) {
 //        log.info("Entering method: {}.{}() with parameters: {}",
 //                point.getSignature().getDeclaringTypeName(),
@@ -27,7 +27,7 @@
 //        );
 //    }
 //
-//    @AfterReturning("execution(public * com.cn.past.time.controller..*(..)) || @annotation(LoggingAspect.LogExecution)")
+//    @AfterReturning("execution(public * com.cn.part.time.controller..*(..)) || @annotation(LoggingAspect.LogExecution)")
 //    public Object logAfterController(JoinPoint point, Object result) {
 //        if (result instanceof Collection<?> res) {
 //            log.info("Exiting method: {}.{}() with result size: {}",

@@ -1,4 +1,4 @@
-package com.cn.past.time.model.service;
+package com.cn.part.time.model.service;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -1,4 +1,4 @@
-package com.cn.past.time.config;
+package com.cn.part.time.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

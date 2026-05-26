@@ -1,9 +1,9 @@
-package com.cn.past.time.service;
+package com.cn.part.time.service;
 
-import com.cn.past.time.exception.MiniZhipinException;
-import com.cn.past.time.model.response.AccountDto;
-import com.cn.past.time.model.response.AccountVo;
-import com.cn.past.time.model.service.AccountBo;
+import com.cn.part.time.exception.MiniZhipinException;
+import com.cn.part.time.model.response.AccountDto;
+import com.cn.part.time.model.response.AccountVo;
+import com.cn.part.time.model.service.AccountBo;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;

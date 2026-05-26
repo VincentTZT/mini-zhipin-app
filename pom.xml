@@ -8,7 +8,7 @@
         <version>3.5.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.cn.past.time</groupId>
+    <groupId>com.cn.part.time</groupId>
     <artifactId>mini-zhipin-app</artifactId>
     <version>1.2.0</version>
     <name>mini-zhipin-app</name>

@@ -1,4 +1,4 @@
-package com.cn.past.time.model.response;
+package com.cn.part.time.model.response;
 
 public record ResponseVo(
         boolean success,

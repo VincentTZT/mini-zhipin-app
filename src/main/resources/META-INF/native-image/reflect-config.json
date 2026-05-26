@@ -1,18 +1,18 @@
 [
   {
-    "name": "com.cn.past.time.model.response.AccountDto",
+    "name": "com.cn.part.time.model.response.AccountDto",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true
   },
   {
-    "name": "com.cn.past.time.model.service.AccountBo",
+    "name": "com.cn.part.time.model.service.AccountBo",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true
   },
   {
-    "name": "com.cn.past.time.model.payload.MiniZhiPinPayload",
+    "name": "com.cn.part.time.model.payload.MiniZhiPinPayload",
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true

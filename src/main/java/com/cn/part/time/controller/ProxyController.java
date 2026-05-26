@@ -1,15 +1,15 @@
-package com.cn.past.time.controller;
+package com.cn.part.time.controller;
 
 
-import com.cn.past.time.exception.MiniZhipinException;
-import com.cn.past.time.model.payload.MiniZhiPinPayload;
-import com.cn.past.time.model.response.AccountVo;
-import com.cn.past.time.model.response.ResponseVo;
-import com.cn.past.time.service.LoginService;
-import com.cn.past.time.service.ZhiPinService;
-import com.cn.past.time.util.AESUtil;
-import com.cn.past.time.util.Const;
-import com.cn.past.time.util.ProxyUtil;
+import com.cn.part.time.exception.MiniZhipinException;
+import com.cn.part.time.model.payload.MiniZhiPinPayload;
+import com.cn.part.time.model.response.AccountVo;
+import com.cn.part.time.model.response.ResponseVo;
+import com.cn.part.time.service.LoginService;
+import com.cn.part.time.service.ZhiPinService;
+import com.cn.part.time.util.AESUtil;
+import com.cn.part.time.util.Const;
+import com.cn.part.time.util.ProxyUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

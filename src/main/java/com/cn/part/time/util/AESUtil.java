@@ -1,6 +1,6 @@
-package com.cn.past.time.util;
+package com.cn.part.time.util;
 
-import com.cn.past.time.exception.MiniZhipinException;
+import com.cn.part.time.exception.MiniZhipinException;
 import org.apache.hc.client5.http.utils.Base64;
 import org.springframework.http.HttpStatus;
 

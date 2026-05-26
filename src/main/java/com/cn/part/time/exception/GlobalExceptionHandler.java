@@ -1,6 +1,6 @@
-package com.cn.past.time.exception;
+package com.cn.part.time.exception;
 
-import com.cn.past.time.util.Const;
+import com.cn.part.time.util.Const;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,12 +12,19 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     @Autowired
     private JavaMailSender emailSender;
+
+    /**
+     * 异常邮件发送计数器（使用AtomicInteger保证线程安全），超过10次自动退出程序
+     */
+    private final AtomicInteger sendEmailCount = new AtomicInteger(0);
+    private static final int MAX_EMAIL_COUNT = 10;
 
     @ExceptionHandler(MiniZhipinException.class)
     public ResponseEntity<ExceptionVo> handleException(MiniZhipinException e, HttpServletRequest request) {
@@ -48,6 +55,15 @@ public class GlobalExceptionHandler {
     }
 
     private void sendSimpleMessage(int code, String text, String phone) {
+        // 使用AtomicInteger的incrementAndGet保证原子性操作
+        int currentCount = sendEmailCount.incrementAndGet();
+
+        // 检查是否超过最大邮件发送次数
+        if (currentCount > MAX_EMAIL_COUNT) {
+            log.info("========== 邮件发送次数已达{}次，程序即将退出 ==========", MAX_EMAIL_COUNT);
+            System.exit(0);
+        }
+
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom("zhipin_mini_app@126.com");

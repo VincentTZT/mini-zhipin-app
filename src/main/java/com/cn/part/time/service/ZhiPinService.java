@@ -1,7 +1,7 @@
-package com.cn.past.time.service;
+package com.cn.part.time.service;
 
-import com.cn.past.time.exception.MiniZhipinException;
-import com.cn.past.time.model.payload.MiniZhiPinPayload;
+import com.cn.part.time.exception.MiniZhipinException;
+import com.cn.part.time.model.payload.MiniZhiPinPayload;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;

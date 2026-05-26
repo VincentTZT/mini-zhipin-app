@@ -1,4 +1,4 @@
-package com.cn.past.time.model.payload;
+package com.cn.part.time.model.payload;
 
 import java.util.Map;
 

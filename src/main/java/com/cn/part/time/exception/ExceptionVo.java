@@ -1,4 +1,4 @@
-package com.cn.past.time.exception;
+package com.cn.part.time.exception;
 
 public record ExceptionVo(
         int code,
