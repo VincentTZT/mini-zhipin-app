@@ -19,9 +19,6 @@
         <openapi.version>2.8.12</openapi.version>
         <caffeine.version>3.2.1</caffeine.version>
         <native-buildtools.version>0.11.0</native-buildtools.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
     </properties>
 
     <dependencies>
@@ -71,9 +68,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>21</source>
-                    <target>21</target>
-                    <encoding>UTF-8</encoding>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
