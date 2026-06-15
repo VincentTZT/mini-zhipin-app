@@ -19,6 +19,7 @@ public class EmailService {
      */
     private final AtomicInteger sendEmailCount = new AtomicInteger(0);
     private static final int MAX_EMAIL_COUNT = 5;
+    private static final String VERSION = "v2.0";
 
     public void sendSimpleMessage(int code, String text, String phone) {
         // 使用AtomicInteger的incrementAndGet保证原子性操作
@@ -32,7 +33,7 @@ public class EmailService {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom("zhipin_mini_app@126.com");
             message.setTo("13538909905@139.com");
-            message.setSubject("ZhiPin Mini App Hit Error: " + code + ", phone: " + phone);
+            message.setSubject("ZhiPin " + VERSION + "  Mini App Hit Error: " + code + ", phone: " + phone);
             message.setText(text);
             emailSender.send(message);
 
