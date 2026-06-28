@@ -99,7 +99,7 @@ public class LoginService {
         HttpHeaders headers = new HttpHeaders();
         MediaType mediaType = new MediaType(MediaType.APPLICATION_FORM_URLENCODED, StandardCharsets.UTF_8);
         headers.setContentType(mediaType);
-        headers.set("accept-language", "en-US,en;q=0.9");
+        headers.set("accept-language", "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7");
         return headers;
     }
 }
