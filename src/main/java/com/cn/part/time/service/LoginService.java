@@ -28,7 +28,7 @@ public class LoginService {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
-    private final static String ACCOUNT_LIST_URL = "https://api.txttool.cn/netcut/note/info/";
+    private final static String ACCOUNT_LIST_URL = "https://api-webnote.txttool.cn/netcut/note/info/";
     private final static String ACCOUNT_PASSWORD = "xin-xin";
 
     @Cacheable(value = "login.service.account", key = "#noteName + '_' + #phone", unless = "#result==null")
